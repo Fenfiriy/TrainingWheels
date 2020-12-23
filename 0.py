@@ -1,7 +1,11 @@
-import discord
 from selenium import webdriver
 import time
-import re
+import os
+import discord
+from dotenv import load_dotenv
+
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
 
 # from bs4 import BeautifulSoup
 
@@ -12,8 +16,8 @@ url = 'https://10minutemail.com'
 client = discord.Client()
 drivers = dict()
 
-opts = webdriver.opera.options.Options()
-opts.binary_location = r'C:\Users\steph\AppData\Local\Programs\Opera GX\launcher.exe'
+opts = webdriver.firefox.options.Options()
+# opts.binary_location = r'C:\Users\steph\AppData\Local\Programs\Opera GX\launcher.exe'
 opts.headless = True
 
 
@@ -29,7 +33,7 @@ async def on_message(message):
         return
     if message.content.startswith('$'):
         if message.content == '$create':
-            driver = webdriver.Opera(options=opts)
+            driver = webdriver.Firefox(options=opts)
 
             drivers[user] = driver
             driver.get(url)
@@ -70,9 +74,9 @@ async def on_message(message):
                         txt_to_print = msg.find_element_by_class_name('message_bottom').text
                         await message.channel.send(txt_to_print)
 
-            elif message.content.startswith('$reply to '):
+            elif message.content.startswith('$reply_to '):
                 try:
-                    msg_index = int(message.content[9:])
+                    msg_index = int(message.content.split()[1])
                 except ValueError:
                     await message.channel.send('Unsupported index')
                 else:
@@ -83,8 +87,9 @@ async def on_message(message):
                         if not msg.find_element_by_class_name('message_bottom').is_displayed():
                             await message.channel.send('Maybe you should read it first?')
                         else:
-                            txt_to_print = msg.find_element_by_class_name('message_bottom').text
-                            await message.channel.send(txt_to_print)
+                            msg.find_element_by_class_name('reply_message_text').send_keys("".join(message.content.split()[2:]))
+                            msg.find_element_by_class_name('reply_message_submit').click()
+
 
             elif message.content == '$end':
                 driver.quit()
@@ -93,5 +98,4 @@ async def on_message(message):
         else:
             await message.channel.send('Your session does not exist')
 
-
-client.run('Nzg4ODY0NTU0MDg4MDA1NzMy.X9ptXg.QLs8HZkEdF3pheDl1Pxig88AM4I')
+client.run(TOKEN)
