@@ -15,10 +15,10 @@ url = 'https://10minutemail.com'
 # print(soup.prettify())
 client = discord.Client()
 drivers = dict()
-
+sess_starts = dict()
 opts = webdriver.firefox.options.Options()
 # opts.binary_location = r'C:\Users\steph\AppData\Local\Programs\Opera GX\launcher.exe'
-opts.headless = True
+# opts.headless = True
 
 
 @client.event
@@ -29,13 +29,17 @@ async def on_ready():
 @client.event
 async def on_message(message):
     user = message.author
+    if user in drivers and sess_starts[user] + 900 > time.time():
+        del drivers[user]
+        del sess_starts[user]
+        await message.channel.send('Your session expired')
     if user == client.user:
         return
     if message.content.startswith('$'):
         if message.content == '$create':
             driver = webdriver.Firefox(options=opts)
-
             drivers[user] = driver
+            sess_starts[user] = time.time()
             driver.get(url)
             time.sleep(5)
             temp_mail = driver.find_element_by_id('mail_address').get_attribute('value')
@@ -87,9 +91,11 @@ async def on_message(message):
                         if not msg.find_element_by_class_name('message_bottom').is_displayed():
                             await message.channel.send('Maybe you should read it first?')
                         else:
-                            msg.find_element_by_class_name('reply_message_text').send_keys("".join(message.content.split()[2:]))
+                            text_to_reply = "".join(message.content.split()[2:])
+                            print(text_to_reply)
+                            msg.find_element_by_class_name('message_reply_icon').click()
+                            msg.find_element_by_class_name('reply_message_text').send_keys(text_to_reply)
                             msg.find_element_by_class_name('reply_message_submit').click()
-
 
             elif message.content == '$end':
                 driver.quit()
