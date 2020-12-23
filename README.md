@@ -1,7 +1,7 @@
 # TrainingWheels
 Discord bot for temporary emails
 
-#Commands
+# Commands
 $create - creates temporary email
 $check - check mailbox for messages
 $read {num} - prints a message with corresponding number
