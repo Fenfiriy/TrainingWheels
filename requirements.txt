@@ -1,5 +1,0 @@
-selenium.webdriver
-time
-os
-discord
-dotenv.load_dotenv
