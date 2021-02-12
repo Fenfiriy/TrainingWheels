@@ -17,3 +17,6 @@ $end - ends your session
 # Setup
 To start this bot, you'll need to install discord, selenium and dotenv libraries and have firefox installed.
 Then create environmetal variable DISCORD_TOKEN and fill it. Then you can run the bot.
+
+# Invite link
+https://discord.com/oauth2/authorize?client_id=788864554088005732&scope=bot
